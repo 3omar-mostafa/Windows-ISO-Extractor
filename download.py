@@ -111,7 +111,7 @@ def main(required_type, required_version, required_language, required_arch):
     download_button = driver.find_element_by_css_selector(".buttond a")
     download_link = download_button.get_attribute("href")
     print(download_link)
-    os.system(f"curl -o win.iso '{download_link}'")
+    os.system(f"wget -O win.iso '{download_link}'")
     driver.quit()
 
 

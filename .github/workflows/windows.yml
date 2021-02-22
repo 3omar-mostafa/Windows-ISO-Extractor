@@ -40,5 +40,8 @@ jobs:
     - name: Install Selenium
       run: pip3 install selenium
 
+    - name: Install wget
+      run: choco install wget
+
     - name: Download Windows ISO
       run: python3 download.py -v 20H1
