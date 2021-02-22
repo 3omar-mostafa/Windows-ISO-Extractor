@@ -40,6 +40,8 @@ jobs:
     - name: Install Selenium
       run: pip3 install selenium
 
+    - name: Install Wget
+      run: curl.exe -o wget.exe 'https://eternallybored.org/misc/wget/1.20.3/64/wget.exe'
+
     - name: Download Windows ISO
-      shell: bash
       run: python3 download.py -v 20H1
