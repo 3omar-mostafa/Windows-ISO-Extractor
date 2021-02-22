@@ -1,4 +1,3 @@
-import os
 from selenium import webdriver
 from time import sleep
 import argparse
@@ -6,6 +5,8 @@ import argparse
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.wait import WebDriverWait
+
+from urllib.request import urlretrieve
 
 MAX_WAIT_TIMEOUT = 120
 
@@ -15,6 +16,7 @@ def get_arguments():
     arg_parser.add_argument("-v", "--version", help="Windows version or build number", required=True)
     arg_parser.add_argument("-l", "--language", help="Windows Language", default="English International")
     arg_parser.add_argument("-a", "--arch", help="x64 or x32", default="x64")
+    arg_parser.add_argument("-o", "--output", help="Output ISO filename", default="win.iso")
     return arg_parser.parse_args()
 
 
@@ -96,7 +98,7 @@ def select_download_type(driver, required_type):
             break
 
 
-def main(required_type, required_version, required_language, required_arch):
+def main(required_type, required_version, required_language, required_arch, filename):
     driver = create_web_driver()
     driver.get("https://tb.rg-adguard.net/public.php")
 
@@ -110,11 +112,12 @@ def main(required_type, required_version, required_language, required_arch):
 
     download_button = driver.find_element_by_css_selector(".buttond a")
     download_link = download_button.get_attribute("href")
-    print(download_link)
-    os.system(f"wget -O win.iso '{download_link}'")
     driver.quit()
+
+    print(download_link)
+    urlretrieve(download_link, filename)
 
 
 if __name__ == "__main__":
     args = get_arguments()
-    main("Windows (Final)", args.version, args.language, args.arch)
+    main("Windows (Final)", args.version, args.language, args.arch, args.output)
