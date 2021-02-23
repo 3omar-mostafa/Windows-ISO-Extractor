@@ -12,7 +12,7 @@ on:
 env:
    ARCH: "x64"
    LANGUAGE: "English International"
-   VERSION: "20H2"
+   VERSION: "20H1"
 
 jobs:
   Extract:
