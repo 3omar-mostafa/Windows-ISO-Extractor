@@ -29,7 +29,7 @@ jobs:
       run: pip3 install selenium
 
     - name: Download Windows ISO
-      run: python3 download.py -v ${{ env.VERSION }} -l ${{ env.LANGUAGE }} -a ${{ env.ARCH }}
+      run: python3 download.py -v "${{ env.VERSION }}" -l "${{ env.LANGUAGE }}" -a "${{ env.ARCH }}"
 
     - name: Windows ISO Checksum
       run: |
