@@ -3,6 +3,8 @@ name: Windows
 on:
   push:
     branches: [ main ]
+    tags:
+      - '*'
   pull_request:
     branches: [ main ]
 
@@ -79,3 +81,18 @@ jobs:
         Get-FileHash -Algorithm SHA256 -Path "${BASE_FILENAME}.zip" > "${BASE_FILENAME}.zip.sha256"
         Dism /Unmount-Image /MountDir:mount /discard
         del mount
+
+    - name: List Created Files
+      shell: bash
+      run: ls -lh *.zip.sha256 *.zip
+
+    - name: Release Files
+      uses: softprops/action-gh-release@v1
+      if: startsWith(github.ref, 'refs/tags/')
+      with:
+        name: "Windows 10 ${{ env.VERSION }} ${{ env.LANGUAGE }} ${{ env.ARCH }} Files"
+        files: |
+          ./*.zip.sha256
+          ./*.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
