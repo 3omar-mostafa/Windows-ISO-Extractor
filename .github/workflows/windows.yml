@@ -6,6 +6,12 @@ on:
   pull_request:
     branches: [ main ]
 
+
+env:
+   ARCH: "x64"
+   LANGUAGE: "English International"
+   VERSION: "20H2"
+
 jobs:
   Extract:
 
@@ -23,7 +29,7 @@ jobs:
       run: pip3 install selenium
 
     - name: Download Windows ISO
-      run: python3 download.py -v 20H1
+      run: python3 download.py -v ${{ env.VERSION }} -l ${{ env.LANGUAGE }} -a ${{ env.ARCH }}"
 
     - name: Windows ISO Checksum
       run: |
@@ -43,18 +49,33 @@ jobs:
 
     - name: Extract Boot Files Home Edition
       run: |
+        $BASE_FILENAME = "Windows10_${{ env.VERSION }}_${{ env.LANGUAGE }}_${{ env.ARCH }}_Home"
         mkdir mount
         Dism /Mount-Image /ImageFile:install.wim /Index:1 /MountDir:$pwd/mount /ReadOnly /optimize
-        Get-FileHash -Algorithm SHA256 -Path (Get-ChildItem ".\mount\Windows\Boot\*.*" -Recurse) > .\hash.txt
-        Compress-Archive .\mount\Windows\Boot\ , .\hash.txt home.zip
-        Get-FileHash -Algorithm SHA256 -Path home.zip
+        Get-FileHash -Algorithm SHA256 -Path (Get-ChildItem ".\mount\Windows\Boot\*.*" -Recurse) > .\hash.sha256
+        Compress-Archive .\mount\Windows\Boot\ , .\hash.sha256 "${BASE_FILENAME}.zip"
+        Get-FileHash -Algorithm SHA256 -Path "${BASE_FILENAME}.zip" > "${BASE_FILENAME}.zip.sha256"
         Dism /Unmount-Image /MountDir:mount /discard
+        del mount
 
     - name: Extract Boot Files Pro Edition
       run: |
+        $BASE_FILENAME = "Windows10_${{ env.VERSION }}_${{ env.LANGUAGE }}_${{ env.ARCH }}_Pro"
         mkdir mount
         Dism /Mount-Image /ImageFile:install.wim /Index:6 /MountDir:$pwd/mount /ReadOnly /optimize
-        Get-FileHash -Algorithm SHA256 -Path (Get-ChildItem ".\mount\Windows\Boot\*.*" -Recurse) > .\hash.txt
-        Compress-Archive .\mount\Windows\Boot\ , .\hash.txt pro.zip
-        Get-FileHash -Algorithm SHA256 -Path pro.zip
+        Get-FileHash -Algorithm SHA256 -Path (Get-ChildItem ".\mount\Windows\Boot\*.*" -Recurse) > .\hash.sha256
+        Compress-Archive .\mount\Windows\Boot\ , .\hash.sha256 "${BASE_FILENAME}.zip"
+        Get-FileHash -Algorithm SHA256 -Path "${BASE_FILENAME}.zip" > "${BASE_FILENAME}.zip.sha256"
         Dism /Unmount-Image /MountDir:mount /discard
+        del mount
+
+    - name: Extract Font Files Pro Edition
+      run: |
+        $BASE_FILENAME = "Windows10_${{ env.VERSION }}_${{ env.LANGUAGE }}_${{ env.ARCH }}_Fonts"
+        mkdir mount
+        Dism /Mount-Image /ImageFile:install.wim /Index:6 /MountDir:$pwd/mount /ReadOnly /optimize
+        Get-FileHash -Algorithm SHA256 -Path (Get-ChildItem ".\mount\Windows\Fonts\*.*") > .\hash.sha256
+        Compress-Archive .\mount\Windows\Fonts\ , .\hash.sha256 "${BASE_FILENAME}.zip"
+        Get-FileHash -Algorithm SHA256 -Path "${BASE_FILENAME}.zip" > "${BASE_FILENAME}.zip.sha256"
+        Dism /Unmount-Image /MountDir:mount /discard
+        del mount
