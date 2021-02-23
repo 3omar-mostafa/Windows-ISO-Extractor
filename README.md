@@ -11,6 +11,9 @@ You can now download any file you need from windows file system.
 # Downloads
 Download Windows Boot and Font files for different windows 10 versions from [releases](https://github.com/3omar-mostafa/Windows-ISO-Extractor/releases)
 
+### Currently Have
+- [Windows 10 20H2 English International x64](https://github.com/3omar-mostafa/Windows-ISO-Extractor/releases/tag/20H2_x64)
+
 # Workflow
 - We download windows iso images from [this website](https://tb.rg-adguard.net/public.php) which generates official direct download links from microsoft.
 
