@@ -7,25 +7,7 @@ on:
     branches: [ main ]
 
 jobs:
-  test_linux:
-
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v2
-
-    - name: Set up Python 3.9
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.9
-
-    - name: Install Selenium
-      run: pip3 install selenium
-
-    - name: Download Windows ISO
-      run: python3 download.py -v 20H1
-
-  test_windows:
+  Extract:
 
     runs-on: windows-latest
 
@@ -42,3 +24,37 @@ jobs:
 
     - name: Download Windows ISO
       run: python3 download.py -v 20H1
+
+    - name: Windows ISO Checksum
+      run: |
+        Get-FileHash -Algorithm SHA1 -Path win.iso
+        Get-FileHash -Algorithm SHA256 -Path win.iso
+
+    - name: Extract install.wim
+      run: |
+        Mount-DiskImage -ImagePath $pwd\win.iso
+        copy E:\sources\install.wim .
+        Dismount-DiskImage -ImagePath $pwd\win.iso
+        del .\win.iso
+
+    - name: Show Available Editions
+      run: |
+        Dism /Get-ImageInfo /ImageFile:install.wim
+
+    - name: Extract Boot Files Home Edition
+      run: |
+        mkdir mount
+        Dism /Mount-Image /ImageFile:install.wim /Index:1 /MountDir:$pwd/mount /ReadOnly /optimize
+        Get-FileHash -Algorithm SHA256 -Path (Get-ChildItem ".\mount\Windows\Boot\*.*" -Recurse) > .\hash.txt
+        Compress-Archive .\mount\Windows\Boot\ , .\hash.txt home.zip
+        Get-FileHash -Algorithm SHA256 -Path home.zip
+        Dism /Unmount-Image /MountDir:mount /discard
+
+    - name: Extract Boot Files Pro Edition
+      run: |
+        mkdir mount
+        Dism /Mount-Image /ImageFile:install.wim /Index:6 /MountDir:$pwd/mount /ReadOnly /optimize
+        Get-FileHash -Algorithm SHA256 -Path (Get-ChildItem ".\mount\Windows\Boot\*.*" -Recurse) > .\hash.txt
+        Compress-Archive .\mount\Windows\Boot\ , .\hash.txt pro.zip
+        Get-FileHash -Algorithm SHA256 -Path pro.zip
+        Dism /Unmount-Image /MountDir:mount /discard
