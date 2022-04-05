@@ -55,7 +55,7 @@ def select_windows_architecture(driver, required_arch):
     for i, file in enumerate(files.options):
         if file.text.find(required_arch) != -1:
             files.select_by_index(i)
-            print("Selected File: " + file.text)
+            print("[INFO] Selected File: " + file.text)
             break
 
 
@@ -66,7 +66,7 @@ def select_windows_language(driver, required_language):
     for i, language in enumerate(languages.options):
         if language.text == required_language:
             languages.select_by_index(i)
-            print("Selected Language: " + language.text)
+            print("[INFO] Selected Language: " + language.text)
             break
 
 
@@ -77,7 +77,7 @@ def select_normal_windows_edition(driver, windows_major_version):
     for i, edition in enumerate(editions.options):
         if edition.text == f"Windows {windows_major_version}":
             editions.select_by_index(i)
-            print("Selected Edition: " + edition.text)
+            print("[INFO] Selected Edition: " + edition.text)
             break
 
 
@@ -88,7 +88,7 @@ def select_windows_version(driver, required_version):
     for i, version in enumerate(versions.options):
         if version.text.find(required_version) != -1:
             versions.select_by_index(i)
-            print("Selected Version: " + version.text)
+            print("[INFO] Selected Version: " + version.text)
             break
 
 
@@ -97,7 +97,7 @@ def select_download_type(driver, required_type):
     for i, type in enumerate(types.options):
         if type.text == required_type:
             types.select_by_index(i)
-            print("Selected Type:" + type.text)
+            print("[INFO] Selected Type: " + type.text)
             break
 
 
@@ -110,6 +110,7 @@ def download_file(url, filename):
         os.remove(filename)
 
     data = urlopen(Request(url, headers={'User-Agent': USER_AGENT}))
+    print(f"[DEBUG] Url to download: '{data.geturl()}'")
 
     size = int(data.info()["Content-Length"])
     chunk_size = 1024*1024
@@ -141,7 +142,6 @@ def main(required_type, windows_major_version, required_version, required_langua
     download_link = download_button.get_attribute("href")
     driver.quit()
     
-    print(download_link)
     download_file(download_link, filename)
 
 
