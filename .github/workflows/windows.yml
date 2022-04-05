@@ -27,8 +27,10 @@ jobs:
       with:
         python-version: 3.9
 
-    - name: Install Selenium
-      run: pip3 install selenium
+    - name: Install python packages
+      run: |
+        pip3 install selenium
+        pip3 install tqdm
 
     - name: Download Windows ISO
       run: python3 download.py -v "${{ env.VERSION }}" -l "${{ env.LANGUAGE }}" -a "${{ env.ARCH }}"

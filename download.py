@@ -1,12 +1,14 @@
 from selenium import webdriver
 from time import sleep
 import argparse
+import os
 
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.wait import WebDriverWait
 
-from urllib.request import urlretrieve
+from urllib.request import urlopen, Request
+from tqdm import tqdm
 
 MAX_WAIT_TIMEOUT = 120
 
@@ -98,6 +100,30 @@ def select_download_type(driver, required_type):
             break
 
 
+def download_file(url, filename):
+
+    USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4464.5 Safari/537.36'
+    GIGABYTE = 1024*1024*1024
+
+    if os.path.exists(filename):
+        os.remove(filename)
+
+    data = urlopen(Request(url, headers={'User-Agent': USER_AGENT}))
+
+    size = int(data.info()["Content-Length"])
+    chunk_size = 1024*1024
+    iterations = int(size/chunk_size) + 2
+    downloaded_size = 0
+
+    with open(filename, 'wb') as f:
+        progress_bar = tqdm(range(iterations))
+        for _ in progress_bar:
+            chunk = data.read(chunk_size)
+            downloaded_size += len(chunk)
+            progress_bar.set_description("Downloaded {:.2f} GB".format(float(downloaded_size)/GIGABYTE))
+            f.write(chunk)
+
+
 def main(required_type, required_version, required_language, required_arch, filename):
     driver = create_web_driver()
     driver.get("https://tb.rg-adguard.net/public.php")
@@ -115,7 +141,7 @@ def main(required_type, required_version, required_language, required_arch, file
     driver.quit()
 
     print(download_link)
-    urlretrieve(download_link, filename)
+    download_file(download_link, filename)
 
 
 if __name__ == "__main__":
