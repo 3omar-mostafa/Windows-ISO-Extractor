@@ -15,6 +15,7 @@ MAX_WAIT_TIMEOUT = 120
 
 def get_arguments():
     arg_parser = argparse.ArgumentParser()
+    arg_parser.add_argument("-w", "--windows", help="Windows major version", choices=["10", "11"], required=True)
     arg_parser.add_argument("-v", "--version", help="Windows version or build number", required=True)
     arg_parser.add_argument("-l", "--language", help="Windows Language", default="English International")
     arg_parser.add_argument("-a", "--arch", help="x64 or x32", default="x64")
@@ -69,12 +70,12 @@ def select_windows_language(driver, required_language):
             break
 
 
-def select_normal_windows_10_edition(driver):
+def select_normal_windows_edition(driver, windows_major_version):
     select_edition = driver.find_element_by_id("edition_id")
     wait_for_list_to_load(select_edition)
     editions = Select(select_edition)
     for i, edition in enumerate(editions.options):
-        if edition.text == "Windows 10":
+        if edition.text == f"Windows {windows_major_version}":
             editions.select_by_index(i)
             print("Selected Edition: " + edition.text)
             break
@@ -124,7 +125,7 @@ def download_file(url, filename):
             f.write(chunk)
 
 
-def main(required_type, required_version, required_language, required_arch, filename):
+def main(required_type, windows_major_version, required_version, required_language, required_arch, filename):
     driver = create_web_driver()
     driver.get("https://tb.rg-adguard.net/public.php")
 
@@ -132,18 +133,18 @@ def main(required_type, required_version, required_language, required_arch, file
 
     select_download_type(driver, required_type)
     select_windows_version(driver, required_version)
-    select_normal_windows_10_edition(driver)
+    select_normal_windows_edition(driver, windows_major_version)
     select_windows_language(driver, required_language)
     select_windows_architecture(driver, required_arch)
 
     download_button = driver.find_element_by_css_selector(".buttond a")
     download_link = download_button.get_attribute("href")
     driver.quit()
-
+    
     print(download_link)
     download_file(download_link, filename)
 
 
 if __name__ == "__main__":
     args = get_arguments()
-    main("Windows (Final)", args.version, args.language, args.arch, args.output)
+    main("Windows (Final)", args.windows, args.version, args.language, args.arch, args.output)

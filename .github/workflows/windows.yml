@@ -12,6 +12,7 @@ on:
 env:
    ARCH: "x64"
    LANGUAGE: "English International"
+   WINDOWS: "10"
    VERSION: "21H1"
 
 jobs:
@@ -33,7 +34,7 @@ jobs:
         pip3 install tqdm
 
     - name: Download Windows ISO
-      run: python3 download.py -v "${{ env.VERSION }}" -l "${{ env.LANGUAGE }}" -a "${{ env.ARCH }}"
+      run: python3 download.py -w "${{ env.WINDOWS }}" -v "${{ env.VERSION }}" -l "${{ env.LANGUAGE }}" -a "${{ env.ARCH }}"
 
     - name: Windows ISO Checksum
       run: |
@@ -92,7 +93,7 @@ jobs:
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/')
       with:
-        name: "Windows 10 ${{ env.VERSION }} ${{ env.LANGUAGE }} ${{ env.ARCH }} Files"
+        name: "Windows ${{ env.WINDOWS }} ${{ env.VERSION }} ${{ env.LANGUAGE }} ${{ env.ARCH }} Files"
         files: |
           ./*.zip.sha256
           ./*.zip
