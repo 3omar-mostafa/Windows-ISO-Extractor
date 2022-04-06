@@ -6,6 +6,7 @@ import os
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.common.by import By
 
 from urllib.request import urlopen, Request
 from tqdm import tqdm
@@ -49,7 +50,7 @@ def create_web_driver():
 
 
 def select_windows_architecture(driver, required_arch):
-    select_file = driver.find_element_by_id("arch_id")
+    select_file = driver.find_element(By.ID, "arch_id")
     wait_for_list_to_load(select_file)
     files = Select(select_file)
     for i, file in enumerate(files.options):
@@ -60,7 +61,7 @@ def select_windows_architecture(driver, required_arch):
 
 
 def select_windows_language(driver, required_language):
-    select_language = driver.find_element_by_id("language_id")
+    select_language = driver.find_element(By.ID, "language_id")
     wait_for_list_to_load(select_language)
     languages = Select(select_language)
     for i, language in enumerate(languages.options):
@@ -71,7 +72,7 @@ def select_windows_language(driver, required_language):
 
 
 def select_normal_windows_edition(driver, windows_major_version):
-    select_edition = driver.find_element_by_id("edition_id")
+    select_edition = driver.find_element(By.ID, "edition_id")
     wait_for_list_to_load(select_edition)
     editions = Select(select_edition)
     for i, edition in enumerate(editions.options):
@@ -82,7 +83,7 @@ def select_normal_windows_edition(driver, windows_major_version):
 
 
 def select_windows_version(driver, required_version):
-    select_version = driver.find_element_by_id("version_id")
+    select_version = driver.find_element(By.ID, "version_id")
     wait_for_list_to_load(select_version)
     versions = Select(select_version)
     for i, version in enumerate(versions.options):
@@ -93,7 +94,7 @@ def select_windows_version(driver, required_version):
 
 
 def select_download_type(driver, required_type):
-    types = Select(driver.find_element_by_id("type_id"))
+    types = Select(driver.find_element(By.ID, "type_id"))
     for i, type in enumerate(types.options):
         if type.text == required_type:
             types.select_by_index(i)
@@ -138,7 +139,7 @@ def main(required_type, windows_major_version, required_version, required_langua
     select_windows_language(driver, required_language)
     select_windows_architecture(driver, required_arch)
 
-    download_button = driver.find_element_by_css_selector(".buttond a")
+    download_button = driver.find_element(By.CSS_SELECTOR, ".buttond a")
     download_link = download_button.get_attribute("href")
     driver.quit()
     
