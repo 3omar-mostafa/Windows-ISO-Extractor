@@ -11,8 +11,8 @@ on:
 env:
    ARCH: "x64"
    LANGUAGE: "English International"
-   WINDOWS: "10"
-   VERSION: "21H2"
+   WINDOWS: "11"
+   VERSION: "22000.318" # a.k.a 21H2
 
 jobs:
   Extract:
