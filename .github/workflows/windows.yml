@@ -51,7 +51,7 @@ jobs:
 
     - name: Extract Boot Files Home Edition
       run: |
-        $BASE_FILENAME = "Windows10_${{ env.VERSION }}_${{ env.LANGUAGE }}_${{ env.ARCH }}_Home"
+        $BASE_FILENAME = "Windows${{ env.WINDOWS }}_${{ env.VERSION }}_${{ env.LANGUAGE }}_${{ env.ARCH }}_Home"
         mkdir mount
         Dism /Mount-Image /ImageFile:install.wim /Index:1 /MountDir:$pwd/mount /ReadOnly /optimize
         Get-FileHash -Algorithm SHA256 -Path (Get-ChildItem ".\mount\Windows\Boot\*.*" -Recurse) > .\hash.sha256
@@ -62,7 +62,7 @@ jobs:
 
     - name: Extract Boot Files Pro Edition
       run: |
-        $BASE_FILENAME = "Windows10_${{ env.VERSION }}_${{ env.LANGUAGE }}_${{ env.ARCH }}_Pro"
+        $BASE_FILENAME = "Windows${{ env.WINDOWS }}_${{ env.VERSION }}_${{ env.LANGUAGE }}_${{ env.ARCH }}_Pro"
         mkdir mount
         Dism /Mount-Image /ImageFile:install.wim /Index:6 /MountDir:$pwd/mount /ReadOnly /optimize
         Get-FileHash -Algorithm SHA256 -Path (Get-ChildItem ".\mount\Windows\Boot\*.*" -Recurse) > .\hash.sha256
@@ -73,7 +73,7 @@ jobs:
 
     - name: Extract Font Files Pro Edition
       run: |
-        $BASE_FILENAME = "Windows10_${{ env.VERSION }}_${{ env.LANGUAGE }}_${{ env.ARCH }}_Fonts"
+        $BASE_FILENAME = "Windows${{ env.WINDOWS }}_${{ env.VERSION }}_${{ env.LANGUAGE }}_${{ env.ARCH }}_Fonts"
         mkdir mount
         Dism /Mount-Image /ImageFile:install.wim /Index:6 /MountDir:$pwd/mount /ReadOnly /optimize
         Get-FileHash -Algorithm SHA256 -Path (Get-ChildItem ".\mount\Windows\Fonts\*.*") > .\hash.sha256
