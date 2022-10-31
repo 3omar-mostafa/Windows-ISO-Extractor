@@ -12,7 +12,8 @@ env:
    ARCH: "x64"
    LANGUAGE: "English International"
    WINDOWS: "11"
-   VERSION: "22621.525" # a.k.a 22H2
+   BUILD: "22621.525"
+   VERSION: "22H2"
 
 jobs:
   Extract:
@@ -31,7 +32,7 @@ jobs:
       run: pip3 install -r requirements.txt
 
     - name: Download Windows ISO
-      run: python3 download.py -w "${{ env.WINDOWS }}" -v "${{ env.VERSION }}" -l "${{ env.LANGUAGE }}" -a "${{ env.ARCH }}"
+      run: python3 download.py -w "${{ env.WINDOWS }}" -v "${{ env.BUILD }}" -l "${{ env.LANGUAGE }}" -a "${{ env.ARCH }}"
 
     - name: Windows ISO Checksum
       run: |
@@ -90,7 +91,7 @@ jobs:
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/')
       with:
-        name: "Windows ${{ env.WINDOWS }} ${{ env.VERSION }} ${{ env.LANGUAGE }} ${{ env.ARCH }} Files"
+        name: "Windows ${{ env.WINDOWS }} ${{ env.VERSION }} (build ${{ env.BUILD }}) ${{ env.LANGUAGE }} ${{ env.ARCH }} Files"
         files: |
           ./*.zip.sha256
           ./*.zip
