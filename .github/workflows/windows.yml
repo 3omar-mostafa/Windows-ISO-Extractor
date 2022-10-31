@@ -50,14 +50,17 @@ jobs:
       run: |
         Dism /Get-ImageInfo /ImageFile:install.wim
 
+    - name: Create Output Directory
+      run: mkdir output_dir
+
     - name: Extract Boot Files Home Edition
       run: |
         $BASE_FILENAME = "Windows${{ env.WINDOWS }}_${{ env.VERSION }}_${{ env.LANGUAGE }}_${{ env.ARCH }}_Home"
         mkdir mount
         Dism /Mount-Image /ImageFile:install.wim /Index:1 /MountDir:$pwd/mount /ReadOnly /optimize
-        Get-FileHash -Algorithm SHA256 -Path (Get-ChildItem ".\mount\Windows\Boot\*.*" -Recurse) > .\hash.sha256
-        Compress-Archive .\mount\Windows\Boot\ , .\hash.sha256 "${BASE_FILENAME}.zip"
-        Get-FileHash -Algorithm SHA256 -Path "${BASE_FILENAME}.zip" > "${BASE_FILENAME}.zip.sha256"
+        Get-FileHash -Algorithm SHA256 -Path (Get-ChildItem ".\mount\Windows\Boot\*.*" -Recurse) > .\output_dir\hash.sha256
+        Compress-Archive .\mount\Windows\Boot\ , .\output_dir\hash.sha256 ".\output_dir\${BASE_FILENAME}.zip"
+        Get-FileHash -Algorithm SHA256 -Path ".\output_dir\${BASE_FILENAME}.zip" > ".\output_dir\${BASE_FILENAME}.zip.sha256"
         Dism /Unmount-Image /MountDir:mount /discard
         del mount
 
@@ -66,9 +69,9 @@ jobs:
         $BASE_FILENAME = "Windows${{ env.WINDOWS }}_${{ env.VERSION }}_${{ env.LANGUAGE }}_${{ env.ARCH }}_Pro"
         mkdir mount
         Dism /Mount-Image /ImageFile:install.wim /Index:6 /MountDir:$pwd/mount /ReadOnly /optimize
-        Get-FileHash -Algorithm SHA256 -Path (Get-ChildItem ".\mount\Windows\Boot\*.*" -Recurse) > .\hash.sha256
-        Compress-Archive .\mount\Windows\Boot\ , .\hash.sha256 "${BASE_FILENAME}.zip"
-        Get-FileHash -Algorithm SHA256 -Path "${BASE_FILENAME}.zip" > "${BASE_FILENAME}.zip.sha256"
+        Get-FileHash -Algorithm SHA256 -Path (Get-ChildItem ".\mount\Windows\Boot\*.*" -Recurse) > .\output_dir\hash.sha256
+        Compress-Archive .\mount\Windows\Boot\ , .\output_dir\hash.sha256 ".\output_dir\${BASE_FILENAME}.zip"
+        Get-FileHash -Algorithm SHA256 -Path ".\output_dir\${BASE_FILENAME}.zip" > ".\output_dir\${BASE_FILENAME}.zip.sha256"
         Dism /Unmount-Image /MountDir:mount /discard
         del mount
 
@@ -77,15 +80,15 @@ jobs:
         $BASE_FILENAME = "Windows${{ env.WINDOWS }}_${{ env.VERSION }}_${{ env.LANGUAGE }}_${{ env.ARCH }}_Fonts"
         mkdir mount
         Dism /Mount-Image /ImageFile:install.wim /Index:6 /MountDir:$pwd/mount /ReadOnly /optimize
-        Get-FileHash -Algorithm SHA256 -Path (Get-ChildItem ".\mount\Windows\Fonts\*.*") > .\hash.sha256
-        Compress-Archive .\mount\Windows\Fonts\ , .\hash.sha256 "${BASE_FILENAME}.zip"
-        Get-FileHash -Algorithm SHA256 -Path "${BASE_FILENAME}.zip" > "${BASE_FILENAME}.zip.sha256"
+        Get-FileHash -Algorithm SHA256 -Path (Get-ChildItem ".\mount\Windows\Fonts\*.*") > .\output_dir\hash.sha256
+        Compress-Archive .\mount\Windows\Fonts\ , .\output_dir\hash.sha256 ".\output_dir\${BASE_FILENAME}.zip"
+        Get-FileHash -Algorithm SHA256 -Path ".\output_dir\${BASE_FILENAME}.zip" > ".\output_dir\${BASE_FILENAME}.zip.sha256"
         Dism /Unmount-Image /MountDir:mount /discard
         del mount
 
     - name: List Created Files
       shell: bash
-      run: ls -lh *.zip.sha256 *.zip
+      run: ls -lh ./output_dir
 
     - name: Release Files
       uses: softprops/action-gh-release@v1
@@ -93,7 +96,6 @@ jobs:
       with:
         name: "Windows ${{ env.WINDOWS }} ${{ env.VERSION }} (build ${{ env.BUILD }}) ${{ env.LANGUAGE }} ${{ env.ARCH }} Files"
         files: |
-          ./*.zip.sha256
-          ./*.zip
+          ./output_dir/*
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
